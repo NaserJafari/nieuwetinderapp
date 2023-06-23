@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Home from "./components/Home.jsx";
+import Login from "./components/Login.jsx";
+import Register from "./components/Register.jsx";
+import Tinder from "./components/Tinder.jsx";
+import LikedPeople from "./components/LikedPeople.jsx";
+import Logout from "./components/Logout.jsx";
+import Profile from "./components/Profile.jsx";
+import AddDataUser from "./components/AddDataUser.jsx";
+import { auth } from "./config/firebase.jsx";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        console.log("user");
+      } else {
+        setUser(null);
+        console.log("no user");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <nav>
+        <Link to="/">Home</Link>
+        {user && (
+          <>
+            <Link to="/tinder">Tinder</Link>
+            <Link to="/likedpeople">Liked People</Link>
+            <Link to="/addDataUser">Add data</Link>
+            <Link to="/profile">Profile</Link>
+            <Link to="/logout">Logout</Link>
+          </>
+        )}
+      </nav>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/tinder" element={<Tinder />} />
+        <Route path="/likedpeople" element={<LikedPeople />} />
+        <Route path="/adddatauser" element={<AddDataUser />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/logout" element={<Logout />} />
+      </Routes>
+    </div>
+  );
 }
 
-export default App
+export default App;
