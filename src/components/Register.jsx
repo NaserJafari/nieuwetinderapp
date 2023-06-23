@@ -2,11 +2,18 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 function Register() {
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [photo, setPhoto] = useState(null);
+  const [age, setAge] = useState("");
+  const [location, setLocation] = useState("");
+  const [interests, setInterests] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
+  const [bio, setBio] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
@@ -14,7 +21,7 @@ function Register() {
 
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
         setUser(user);
         console.log(user);
@@ -22,24 +29,36 @@ function Register() {
         const db = getFirestore();
         const usersCollection = collection(db, "users");
         const userDoc = doc(usersCollection, user.uid);
-        
-        // Set the user data in the "users" collection
-        setDoc(userDoc, {
+
+        const storage = getStorage();
+        const storageRef = ref(storage, `user-photos/${user.uid}`);
+        await uploadBytes(storageRef, photo);
+        const photoURL = await getDownloadURL(storageRef);
+
+        await setDoc(userDoc, {
           uid: user.uid,
           email: user.email,
-        }).then(() => {
-          console.log("User data added to Firestore");
-          navigate("/tinder");
-        }).catch((error) => {
-          console.log("Error adding user data to Firestore:", error);
+          photoURL: photoURL,
+          age: age,
+          location: location,
+          interests: interests,
+          isPublic: isPublic,
+          bio: bio
         });
+
+        console.log("User data added to Firestore");
+        navigate("/tinder");
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        // Handle error
         console.log(errorCode, errorMessage);
       });
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    setPhoto(file);
   };
 
   return (
@@ -68,6 +87,78 @@ function Register() {
             className="border border-gray-400 p-2"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="photo" className="text-gray-700">
+            Photo:
+          </label>
+          <input
+            type="file"
+            id="photo"
+            accept="image/*"
+            onChange={handlePhotoChange}
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="age" className="text-gray-700">
+            Age:
+          </label>
+          <input
+            type="text"
+            id="age"
+            className="border border-gray-400 p-2"
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="location" className="text-gray-700">
+            Location:
+          </label>
+          <input
+            type="text"
+            id="location"
+            className="border border-gray-400 p-2"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="interests" className="text-gray-700">
+            Interests:
+          </label>
+          <input
+            type="text"
+            id="interests"
+            className="border border-gray-400 p-2"
+            value={interests}
+            onChange={(e) => setInterests(e.target.value)}
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="isPublic" className="text-gray-700">
+            Account Privacy:
+          </label>
+          <select
+            id="isPublic"
+            className="border border-gray-400 p-2"
+            value={isPublic}
+            onChange={(e) => setIsPublic(e.target.value === "true")}
+          >
+            <option value="true">Public</option>
+            <option value="false">Private</option>
+          </select>
+        </div>
+        <div className="mb-4">
+          <label htmlFor="bio" className="text-gray-700">
+            Bio:
+          </label>
+          <textarea
+            id="bio"
+            className="border border-gray-400 p-2"
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
           />
         </div>
         <button

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, updateDoc, getDoc } from "firebase/firestore";
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -11,6 +11,7 @@ function Profile() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
+        fetchUserData(user.uid);
         fetchPrivacySetting(user.uid);
       } else {
         setUser(null);
@@ -20,6 +21,25 @@ function Profile() {
 
     return () => unsubscribe();
   }, []);
+
+  const fetchUserData = async (uid) => {
+    const db = getFirestore();
+    const userRef = doc(db, "users", uid);
+
+    try {
+      const snapshot = await getDoc(userRef);
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setUser((prevUser) => ({
+          ...prevUser,
+          photoURL: data.photoURL,
+          email: data.email,
+        }));
+      }
+    } catch (error) {
+      console.log("Error fetching user data:", error);
+    }
+  };
 
   const fetchPrivacySetting = async (uid) => {
     const db = getFirestore();
@@ -86,9 +106,7 @@ function Profile() {
                 >
                   {isPublic ? "Set Private" : "Set Public"}
                 </button>
-                <button className="bg-gray-300 text-gray-700 rounded-full px-6 py-2 hover:bg-gray-400">
-                  Profile Component Test
-                </button>
+
               </div>
             </div>
           </>

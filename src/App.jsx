@@ -10,6 +10,7 @@ import Profile from "./components/Profile.jsx";
 import AddDataUser from "./components/AddDataUser.jsx";
 import { auth } from "./config/firebase.jsx";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import ViewProfile from "./components/ViewProfile.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -47,6 +48,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/tinder" element={<Tinder />} />
+        <Route path="/viewprofile/:id" element={<ViewProfile />} />
         <Route path="/likedpeople" element={<LikedPeople />} />
         <Route path="/adddatauser" element={<AddDataUser />} />
         <Route path="/profile" element={<Profile />} />

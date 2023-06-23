@@ -1,6 +1,7 @@
 import { getAuth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -20,7 +21,6 @@ function Login() {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        // Handle error
         console.log(errorCode, errorMessage);
       });
   };
@@ -33,12 +33,26 @@ function Login() {
       .then((result) => {
         const user = result.user;
         console.log(user);
-        navigate("/tinder");
+
+        const db = getFirestore();
+        const usersCollection = collection(db, "users");
+        const userDoc = doc(usersCollection, user.uid);
+        
+        setDoc(userDoc, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+        }).then(() => {
+          console.log("User data added to Firestore");
+          navigate("/tinder");
+        }).catch((error) => {
+          console.log("Error adding user data to Firestore:", error);
+        });
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        // Handle error
         console.log(errorCode, errorMessage);
       });
   };

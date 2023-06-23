@@ -13,7 +13,6 @@ function AddDataUser() {
     const auth = getAuth();
     const user = auth.currentUser;
 
-    // Store additional data in the "users" collection
     const db = getFirestore();
     const userRef = doc(db, "users", user.uid);
     setDoc(
@@ -30,11 +29,9 @@ function AddDataUser() {
       .then(() => {
         console.log("Data stored in the 'users' collection successfully");
         setSuccessMessage("Data successfully updated");
-        // Do any additional actions or navigate to another page
       })
       .catch((error) => {
         console.log("Error storing data in the 'users' collection:", error);
-        // Handle error
       });
   };
 
@@ -45,7 +42,6 @@ function AddDataUser() {
     const auth = getAuth();
     const user = auth.currentUser;
 
-    // Update the user profile with the new photoURL
     const storageRef = ref(getStorage());
     const fileRef = ref(storageRef, `user-photos/${user.uid}/${file.name}`);
 
@@ -56,10 +52,8 @@ function AddDataUser() {
             .then(() => {
               console.log("Profile photo updated successfully");
 
-              // Update the photoURL state
               setPhotoFile(downloadURL);
 
-              // Store additional data in the "users" collection
               const db = getFirestore();
               const userRef = doc(db, "users", user.uid);
               setDoc(
@@ -79,25 +73,21 @@ function AddDataUser() {
                     "Data stored in the 'users' collection successfully"
                   );
                   setSuccessMessage("Data successfully updated");
-                  // Do any additional actions or navigate to another page
                 })
                 .catch((error) => {
                   console.log(
                     "Error storing data in the 'users' collection:",
                     error
                   );
-                  // Handle error
                 });
             })
             .catch((error) => {
               console.log("Error updating profile photo:", error);
-              // Handle error
             });
         });
       })
       .catch((error) => {
         console.log("Error uploading photo:", error);
-        // Handle error
       });
   };
 

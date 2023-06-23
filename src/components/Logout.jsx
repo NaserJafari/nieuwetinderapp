@@ -8,7 +8,7 @@ function Logout() {
     signOut(auth).then(() => {
     navigate("/");
     }).catch((error) => {
-      // An error happened.
+      console.log("error, sign out");
     });
     
 
