@@ -11,7 +11,6 @@ import AddDataUser from "./components/AddDataUser.jsx";
 import { auth } from "./config/firebase.jsx";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import ViewProfile from "./components/ViewProfile.jsx";
-import ShareContent from "./components/ShareContent.jsx";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -40,7 +39,6 @@ function App() {
             <Link to="/likedpeople">Liked People</Link>
             <Link to="/addDataUser">Add data</Link>
             <Link to="/profile">Profile</Link>
-            <Link to="/sharecontent">Share content</Link>
             <Link to="/logout">Logout</Link>
           </>
         )}
@@ -54,7 +52,6 @@ function App() {
         <Route path="/likedpeople" element={<LikedPeople />} />
         <Route path="/adddatauser" element={<AddDataUser />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/sharecontent" element={<ShareContent />} />
         <Route path="/logout" element={<Logout />} />
       </Routes>
     </div>
