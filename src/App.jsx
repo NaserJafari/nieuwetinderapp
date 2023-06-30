@@ -9,7 +9,7 @@ import Logout from "./components/Logout.jsx";
 import Profile from "./components/Profile.jsx";
 import AddDataUser from "./components/AddDataUser.jsx";
 import { auth } from "./config/firebase.jsx";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import ViewProfile from "./components/ViewProfile.jsx";
 
 function App() {
